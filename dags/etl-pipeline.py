@@ -36,3 +36,5 @@ with DAG(
         arguments=["print('Loading data into destination...')"],
         container_resources=RESOURCES,
     )
+
+    extract >> transform >> load
