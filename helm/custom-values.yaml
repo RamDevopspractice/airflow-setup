@@ -1,15 +1,3 @@
-executor: KubernetesExecutor
+# Custom Values for Airflow
 
-dags:
-  gitSync:
-    enabled: true
-    repo: https://github.com/RamDevopspractice/airflow-setup.git
-    branch: main
-    subPath: dags
-    period: 60s
-    credentialsSecret: git-credentials
-
-images:
-  gitSync:
-    repository: k8s.gcr.io/git-sync/git-sync
-    tag: v4.4.2
+# Replace git sync with Helm templates and persistent volumes for DAG management instead of continuous git sync
