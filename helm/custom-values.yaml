@@ -1,3 +1,59 @@
 # Custom Values for Airflow
+# Using Helm templates and persistent volumes for DAG management instead of continuous git sync
 
-# Replace git sync with Helm templates and persistent volumes for DAG management instead of continuous git sync
+executor: KubernetesExecutor
+
+# Disable Git Sync
+dags:
+  gitSync:
+    enabled: false
+
+# Persistent Volume Configuration for DAGs
+persistence:
+  enabled: true
+  storageClassName: standard
+  accessMode: ReadWriteOnce
+  size: 10Gi
+  mountPath: /opt/airflow/dags
+  
+# Volume claim for DAGs
+volumes:
+  - name: dags-pv
+    persistentVolumeClaim:
+      claimName: airflow-dags-pvc
+
+volumeMounts:
+  - name: dags-pv
+    mountPath: /opt/airflow/dags
+    readOnly: false
+
+# InitContainer to load DAGs from Git (runs once at pod startup)
+initContainers:
+  - name: git-clone-dags
+    image: alpine/git:latest
+    command:
+      - /bin/sh
+      - -c
+      - |
+        if [ ! -d /dags/.git ]; then
+          git clone --branch main https://github.com/RamDevopspractice/airflow-setup.git /tmp/repo
+          cp -r /tmp/repo/dags/* /dags/
+        fi
+    volumeMounts:
+      - name: dags-pv
+        mountPath: /dags
+
+# Webserver configuration
+webserver:
+  replicas: 1
+  service:
+    type: ClusterIP
+    port: 8080
+
+# Scheduler configuration
+scheduler:
+  replicas: 1
+
+# Worker configuration (for KubernetesExecutor)
+workers:
+  replicas: 0
