@@ -8,3 +8,6 @@ dags:
     subPath: "dags"
     period: 60s
     credentialsSecret: git-credentials
+    image:
+        repository: k8s.gcr.io/git-sync/git-sync   # ✅ FIX
+        tag: v4.4.2
