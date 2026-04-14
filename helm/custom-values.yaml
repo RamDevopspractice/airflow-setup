@@ -16,7 +16,7 @@ persistence:
   size: 10Gi
   mountPath: /opt/airflow/dags
   
-# Volume claim for DAGs
+# Volume claim for DAGs - mount the dags directory directly
 volumes:
   - name: dags-pv
     persistentVolumeClaim:
@@ -27,21 +27,9 @@ volumeMounts:
     mountPath: /opt/airflow/dags
     readOnly: false
 
-# InitContainer to load DAGs from Git (runs once at pod startup)
-initContainers:
-  - name: git-clone-dags
-    image: alpine/git:latest
-    command:
-      - /bin/sh
-      - -c
-      - |
-        if [ ! -d /dags/.git ]; then
-          git clone --branch main https://github.com/RamDevopspractice/airflow-setup.git /tmp/repo
-          cp -r /tmp/repo/dags/* /dags/
-        fi
-    volumeMounts:
-      - name: dags-pv
-        mountPath: /dags
+# No InitContainer needed - DAGs directory is mounted directly from PV
+# Pre-populate the PV with your DAGs before deploying this chart
+# Or use a sidecar container to sync DAGs from external source if needed
 
 # Webserver configuration
 webserver:
