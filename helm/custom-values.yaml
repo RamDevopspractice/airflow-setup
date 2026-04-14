@@ -48,7 +48,10 @@ webserver:
   replicas: 1
   service:
     type: ClusterIP
-    port: 8080
+    ports:
+      - name: http
+        containerPort: 8080
+        servicePort: 8080
 
 # Scheduler configuration
 scheduler:
