@@ -1,0 +1,8 @@
+webserver:
+  service:
+    type: ClusterIP
+    ports:
+      - name: http
+        containerPort: 8080
+        servicePort: 8080
+  # Other configurations can go here
